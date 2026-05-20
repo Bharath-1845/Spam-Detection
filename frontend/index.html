@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AegisEmail // Intelligent Spam & Ham Email Detection System</title>
+  <!-- SEO & Fonts -->
+  <meta name="description" content="Intelligent email spam and ham classification system featuring high precision Naive Bayes model and midnight glassmorphic aesthetics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Glowing backdrops for Glassmorphism -->
+  <div class="radial-glow glow-1"></div>
+  <div class="radial-glow glow-2"></div>
+  
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="logo-text">
+          <h1>AegisEmail</h1>
+          <span class="tagline">Intelligent Spam & Ham Shield</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <!-- System Status Badge -->
+        <div class="status-badge" id="system-status">
+          <span class="pulse-dot"></span>
+          <span class="status-text">Shield Active</span>
+        </div>
+        
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" class="icon-btn" aria-label="Toggle Light/Dark Mode" title="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="tab-navigation" aria-label="Main Navigation">
+      <button class="tab-btn active" data-tab="single" id="tab-single">
+        <i class="fa-solid fa-magnifying-glass"></i> Single Email
+      </button>
+      <button class="tab-btn" data-tab="batch" id="tab-batch">
+        <i class="fa-solid fa-folder-open"></i> Batch MBOX
+      </button>
+      <button class="tab-btn" data-tab="dashboard" id="tab-dashboard">
+        <i class="fa-solid fa-chart-pie"></i> Session Dashboard
+      </button>
+      <button class="tab-btn" data-tab="history" id="tab-history">
+        <i class="fa-solid fa-clock-rotate-left"></i> History
+      </button>
+    </nav>
+
+    <!-- Main Views Container -->
+    <main class="views-container">
+      
+      <!-- 🔍 VIEW 1: Single Email Predictor -->
+      <section id="view-single" class="view-panel active">
+        <div class="grid-layout cols-2">
+          
+          <!-- Input Card -->
+          <div class="glass-card fade-in">
+            <h2 class="card-title"><i class="fa-solid fa-keyboard text-primary"></i> Input Email Content</h2>
+            <p class="card-subtitle">Paste raw email text or load one of our optimized system test presets below.</p>
+            
+            <div class="form-group">
+              <textarea id="email-text-input" placeholder="Type or paste email headers and body text here..." aria-label="Email Text Input"></textarea>
+            </div>
+            
+            <!-- Quick Test Sample Triggers -->
+            <div class="presets-container">
+              <span class="preset-label">Test Presets:</span>
+              <div class="preset-buttons">
+                <button type="button" class="preset-btn" id="preset-ham-normal" title="Standard project team update.">
+                  <i class="fa-solid fa-check text-success"></i> Normal Ham
+                </button>
+                <button type="button" class="preset-btn" id="preset-ham-borderline" title="A professional-looking borderline ham with high-urgency keywords (Trained boundary test).">
+                  <i class="fa-solid fa-triangle-exclamation text-warning"></i> Borderline Ham
+                </button>
+                <button type="button" class="preset-btn" id="preset-spam-normal" title="High reward lottery spam email.">
+                  <i class="fa-solid fa-circle-xmark text-danger"></i> Lottery Spam
+                </button>
+                <button type="button" class="preset-btn" id="preset-spam-phish" title="Classic urgent credential verification phishing scam.">
+                  <i class="fa-solid fa-fish text-danger"></i> Phishing Spam
+                </button>
+              </div>
+            </div>
+            
+            <button id="btn-analyze-single" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-bolt"></i> Analyze Email
+            </button>
+          </div>
+          
+          <!-- Results Card -->
+          <div class="glass-card fade-in justify-center">
+            <h2 class="card-title"><i class="fa-solid fa-square-poll-vertical text-primary"></i> Analysis Results</h2>
+            
+            <!-- Empty state for Results -->
+            <div id="single-empty-state" class="empty-state">
+              <div class="empty-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <p>Enter text on the left and click <strong>Analyze Email</strong> to evaluate risk level instantly.</p>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <div id="single-loading-state" class="loading-state hidden">
+              <div class="spinner"></div>
+              <p>Evaluating semantic features using Naive Bayes...</p>
+            </div>
+            
+            <!-- Result Output -->
+            <div id="single-result-state" class="result-display hidden">
+              <div id="result-badge" class="badge">
+                <span id="result-badge-icon"></span>
+                <span id="result-badge-text"></span>
+              </div>
+              
+              <div class="confidence-container">
+                <span class="confidence-label">System Confidence</span>
+                <div class="progress-bar-track">
+                  <div id="confidence-progress" class="progress-bar-fill"></div>
+                </div>
+                <div class="confidence-details">
+                  <span id="confidence-percentage">0%</span>
+                  <span id="confidence-level-text">Evaluating...</span>
+                </div>
+              </div>
+              
+              <div class="probability-split-container">
+                <div class="prob-box ham">
+                  <span class="prob-name">Ham probability</span>
+                  <span class="prob-val" id="prob-ham-val">0.0%</span>
+                </div>
+                <div class="prob-box spam">
+                  <span class="prob-name">Spam probability</span>
+                  <span class="prob-val" id="prob-spam-val">0.0%</span>
+                </div>
+              </div>
+              
+              <div class="preview-text-box">
+                <span class="box-label">Scrubbed Text Analyzed</span>
+                <p id="scrubbed-text-preview"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- 📂 VIEW 2: Batch MBOX Processing -->
+      <section id="view-batch" class="view-panel">
+        <div class="glass-card fade-in">
+          <h2 class="card-title"><i class="fa-solid fa-box-archive text-primary"></i> Batch Mailbox Classification</h2>
+          <p class="card-subtitle">Upload email backups in <code>.mbox</code> or <code>.txt</code> formats. The system will cleanly strip embedded HTML and classify all records sequentially.</p>
+          
+          <!-- Dropzone Area -->
+          <div id="dropzone" class="dropzone-area">
+            <input type="file" id="batch-file-input" accept=".mbox,.txt" class="hidden-input">
+            <div class="dropzone-content">
+              <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+              <h3>Drag & Drop mailbox file here</h3>
+              <p>or <span class="highlight-link">browse system folders</span></p>
+              <span class="supported-formats">Supported extensions: .mbox, .txt</span>
+            </div>
+          </div>
+          
+          <!-- Selected File & Actions -->
+          <div id="upload-actions-container" class="upload-actions hidden">
+            <div class="file-details">
+              <i class="fa-solid fa-file-code file-icon"></i>
+              <div>
+                <h4 id="selected-file-name">filename.mbox</h4>
+                <p id="selected-file-size">0 KB</p>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button id="btn-cancel-upload" class="btn btn-outline"><i class="fa-solid fa-trash"></i> Clear</button>
+              <button id="btn-process-batch" class="btn btn-primary"><i class="fa-solid fa-play"></i> Run Classification</button>
+            </div>
+          </div>
+          
+          <!-- Processing State -->
+          <div id="batch-loading-state" class="loading-state hidden mt-20">
+            <div class="spinner"></div>
+            <p>Decompressing files, isolating bodies, and performing automated inference...</p>
+          </div>
+          
+          <!-- Table Results Section -->
+          <div id="batch-results-container" class="batch-results hidden mt-20">
+            <div class="batch-header">
+              <h3><i class="fa-solid fa-list-check text-primary"></i> Classified Inbox List (<span id="batch-total-count">0</span> emails)</h3>
+              <div class="export-controls">
+                <button id="btn-export-csv" class="btn btn-outline btn-sm"><i class="fa-solid fa-file-csv text-success"></i> Export CSV</button>
+                <button id="btn-export-pdf" class="btn btn-outline btn-sm"><i class="fa-solid fa-file-pdf text-danger"></i> PDF Report</button>
+              </div>
+            </div>
+            
+            <div class="table-scroll-container">
+              <table class="results-table" id="batch-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Sender</th>
+                    <th>Classification</th>
+                    <th>Confidence</th>
+                  </tr>
+                </thead>
+                <tbody id="batch-table-body">
+                  <!-- Generated Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- 📊 VIEW 3: Session Dashboard -->
+      <section id="view-dashboard" class="view-panel">
+        <!-- Empty dashboard state -->
+        <div id="dashboard-empty-state" class="glass-card text-center fade-in">
+          <div class="empty-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <h2>Dashboard Unpopulated</h2>
+          <p>The dashboard starts empty to save active browser memory. Perform a single or batch classification to automatically populate real-time session analytics.</p>
+          <button class="btn btn-primary mt-15" onclick="document.getElementById('tab-single').click()"><i class="fa-solid fa-circle-plus"></i> Classify Email Now</button>
+        </div>
+        
+        <!-- Live Dashboard State -->
+        <div id="dashboard-live-state" class="hidden">
+          <!-- KPI Metrics Row -->
+          <div class="metrics-row grid-layout cols-4">
+            
+            <div class="glass-card metric-card fade-in">
+              <span class="metric-label">Total Classified</span>
+              <h3 class="metric-value" id="kpi-total">0</h3>
+              <div class="metric-icon bg-primary-soft text-primary"><i class="fa-solid fa-envelope-open-text"></i></div>
+            </div>
+            
+            <div class="glass-card metric-card fade-in">
+              <span class="metric-label">Spam Intercepted</span>
+              <h3 class="metric-value text-danger" id="kpi-spam">0</h3>
+              <div class="metric-icon bg-danger-soft text-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            
+            <div class="glass-card metric-card fade-in">
+              <span class="metric-label">Ham Confirmed</span>
+              <h3 class="metric-value text-success" id="kpi-ham">0</h3>
+              <div class="metric-icon bg-success-soft text-success"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            
+            <div class="glass-card metric-card fade-in">
+              <span class="metric-label">Spam Ratio</span>
+              <h3 class="metric-value" id="kpi-ratio">0.0%</h3>
+              <div class="metric-icon bg-warning-soft text-warning"><i class="fa-solid fa-percent"></i></div>
+            </div>
+            
+          </div>
+          
+          <!-- Charts Layout -->
+          <div class="grid-layout cols-3 mt-20">
+            <!-- Chart Card -->
+            <div class="glass-card cols-span-1 fade-in justify-center">
+              <h2 class="card-title text-center"><i class="fa-solid fa-chart-pie text-primary"></i> Threat Distribution</h2>
+              <div class="chart-canvas-container">
+                <canvas id="threat-chart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Statistics Breakdown -->
+            <div class="glass-card cols-span-2 fade-in">
+              <h2 class="card-title"><i class="fa-solid fa-clipboard-list text-primary"></i> Accuracy & Confidence Profile</h2>
+              
+              <div class="stat-progress-section mt-10">
+                <div class="stat-progress-item">
+                  <div class="stat-info">
+                    <span>Average Ham Confidence</span>
+                    <strong id="stat-avg-ham-conf">0.0%</strong>
+                  </div>
+                  <div class="progress-bar-track">
+                    <div id="stat-ham-progress-fill" class="progress-bar-fill success" style="width: 0%;"></div>
+                  </div>
+                </div>
+                
+                <div class="stat-progress-item mt-15">
+                  <div class="stat-info">
+                    <span>Average Spam Confidence</span>
+                    <strong id="stat-avg-spam-conf">0.0%</strong>
+                  </div>
+                  <div class="progress-bar-track">
+                    <div id="stat-spam-progress-fill" class="progress-bar-fill danger" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="dashboard-action-box mt-30 text-center">
+                <h3>Want a professional copy of these stats?</h3>
+                <p>Generate a structured PDF report containing these distribution charts and detailed threat listings.</p>
+                <div class="mt-15 flex justify-center gap-10">
+                  <button id="dashboard-export-csv" class="btn btn-outline"><i class="fa-solid fa-file-csv text-success"></i> Export CSV</button>
+                  <button id="dashboard-export-pdf" class="btn btn-primary"><i class="fa-solid fa-file-pdf"></i> Download PDF Report</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- 📜 VIEW 4: Session History -->
+      <section id="view-history" class="view-panel">
+        <div class="history-controls-header">
+          <h2><i class="fa-solid fa-clock-rotate-left text-primary"></i> Session History</h2>
+          <button id="btn-clear-history" class="btn btn-danger btn-sm"><i class="fa-solid fa-circle-minus"></i> Clear Session History</button>
+        </div>
+        
+        <!-- Side by side columns -->
+        <div class="grid-layout cols-2 mt-15">
+          
+          <!-- Spam History Column -->
+          <div class="history-column">
+            <div class="column-header danger">
+              <h3>🚨 Spam History (<span id="spam-history-count">0</span>)</h3>
+            </div>
+            
+            <div class="scrollable-history-container" id="spam-history-list">
+              <!-- Spam bubble cards go here -->
+              <div class="empty-history-placeholder" id="spam-history-placeholder">
+                <i class="fa-solid fa-circle-check placeholder-icon"></i>
+                <p>No spam detected in this session yet.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Ham History Column -->
+          <div class="history-column">
+            <div class="column-header success">
+              <h3>✅ Ham History (<span id="ham-history-count">0</span>)</h3>
+            </div>
+            
+            <div class="scrollable-history-container" id="ham-history-list">
+              <!-- Ham bubble cards go here -->
+              <div class="empty-history-placeholder" id="ham-history-placeholder">
+                <i class="fa-solid fa-envelope placeholder-icon"></i>
+                <p>No clean emails classified in this session yet.</p>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+      
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 AegisEmail Security Lab. Developed with high-precision Multinomial Naive Bayes (tuned FP=2/1448 ham files).</p>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank"><i class="fa-brands fa-github"></i> Source</a>
+        <span>|</span>
+        <a href="/api/docs" target="_blank" id="api-docs-link"><i class="fa-solid fa-book"></i> API Reference</a>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Main Logic JS -->
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
