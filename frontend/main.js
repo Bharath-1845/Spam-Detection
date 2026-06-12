@@ -147,11 +147,14 @@ function setupSinglePredictor() {
     loadingState.classList.remove("hidden");
     
     try {
-      const response = await fetch("/api/predict/single", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text })
-      });
+     const response = await fetch(
+  'https://spam-detection-re0j.onrender.com/api/predict/single',
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  }
+);
       
       if (!response.ok) {
         throw new Error("Backend classification service failed.");
@@ -300,7 +303,7 @@ function setupBatchPredictor() {
     formData.append("file", selectedFile);
     
     try {
-      const response = await fetch("/api/predict/batch", {
+      const response = await fetch("https://spam-detection-re0j.onrender.com/api/predict/batch", {
         method: "POST",
         body: formData
       });
@@ -642,7 +645,7 @@ async function exportCSV() {
   }
   
   try {
-    const response = await fetch("/api/export/csv", {
+    const response = await fetch("https://spam-detection-re0j.onrender.com/api/export/csv", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ results: sessionResults })
@@ -674,7 +677,7 @@ async function exportPDF() {
   try {
     const summary = getSummaryStats();
     
-    const response = await fetch("/api/export/pdf", {
+    const response = await fetch("https://spam-detection-re0j.onrender.com/api/export/pdf", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
