@@ -13,8 +13,11 @@ from pydantic import BaseModel
 from bs4 import BeautifulSoup
 
 # Relative imports from ml/classifier and pdf_generator
-from ml.classifier import EmailClassifier
-from pdf_generator import generate_report_pdf
+from .ml.classifier import EmailClassifier
+from .pdf_generator import generate_report_pdf
+
+
+
 
 # Pydantic Schemas
 class SinglePredictRequest(BaseModel):
@@ -150,7 +153,7 @@ def parse_txt_file(content: str) -> List[Dict[str, Any]]:
             
     # If no delimiter found, split by double newlines
     if not split_texts:
-        split_texts = [p.strip() for p in content.split("\n\n") if p.strip()]
+       split_texts = [content.strip()]
         
     for idx, raw_email in enumerate(split_texts):
         # Clean email text
@@ -284,7 +287,7 @@ def export_pdf(payload: ExportPDFRequest):
             content=pdf_bytes,
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename=classification_report_{tempfile.mktemp(dir='')}.pdf",
+                "Content-Disposition": "attachment; filename=classification_report.pdf",
                 "Access-Control-Expose-Headers": "Content-Disposition"
             }
         )

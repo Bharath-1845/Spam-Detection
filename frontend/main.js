@@ -12,8 +12,11 @@ let selectedFile = null;
 // Presets content matching the training vocabulary
 const PRESETS = {
   hamNormal: "Hi team, please find the weekly status report attached. Let me know if you have any questions.",
-  hamBorderline: "Subject: URGENT Lottery Winner Cash Prize Claim. Body: Congratulations, you have won a free cash lottery prize of one million dollars! Click here to claim your reward immediately.",
+
+  hamBorderline: "Subject: Special Offer for Customers. Dear Customer, we are pleased to offer you a 20% discount on your next purchase. Visit our official website for more details. Thank you for choosing our services.",
+
   spamNormal: "Congratulations! Your email address was selected as the grand prize winner. Claim your cash rewards now by clicking this link.",
+
   spamPhish: "Dear customer, we detected unusual activity on your account. Please click here to verify your login credentials immediately."
 };
 
