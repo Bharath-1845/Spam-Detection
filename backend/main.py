@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 
 # Relative imports from ml/classifier and pdf_generator
 from ml.classifier import EmailClassifier
-from .pdf_generator import generate_report_pdf
+from pdf_generator import generate_report_pdf
 
 
 
